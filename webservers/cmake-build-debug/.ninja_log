@@ -1,0 +1,7 @@
+# ninja log v5
+0	265	1670773112125851940	CMakeFiles/webservers.dir/main.c.o	20373ca2db9ffcd8
+1	136	1670786546783152486	build.ninja	6d09b37028c32b9b
+1	129	1670780147623122573	CMakeFiles/webservers.dir/hostinfo.c.o	c531b6a200c14480
+2	121	1670780147612667971	CMakeFiles/webservers.dir/echo.c.o	62257c67ac87c404
+2	128	1670780147622421084	CMakeFiles/webservers.dir/echoclient.c.o	9a11f6bac143f561
+3	152	1670780147648467130	CMakeFiles/webservers.dir/adder.c.o	bfeacc5136be02af
