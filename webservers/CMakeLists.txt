@@ -3,4 +3,4 @@ project(webservers C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(webservers hostinfo.c echoclient.c echoserveri.c echo.c adder.c tiny/csapp.c tiny/tiny.c global-hex2dd.c dd2hex.c hostinfo-ntop.c tiny/cgi-bin/adder.c cache.h cache.c csapp.c error.h debug.h)
+add_executable(webservers hostinfo.c echoclient.c echoserveri.c echo.c tiny/csapp.c tiny/tiny.c global-hex2dd.c dd2hex.c hostinfo-ntop.c tiny/cgi-bin/adder.c cache.h cache.c csapp.c error.h debug.h)
