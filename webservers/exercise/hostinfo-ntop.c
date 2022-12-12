@@ -17,7 +17,7 @@ int main(int argc, char **argv){
     /*addrinfo 레코드 리스트 가져옴*/
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET; //IPv4 Only
-    hints.ai_socktype = SOCK_STREAM //Connection Only
+    hints.ai_socktype = SOCK_STREAM; //Connection Only
     if((rc = getaddrinfo(argv[1], NULL, &hints, &listp)) != 0){
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(rc));
         exit(1);
@@ -25,7 +25,7 @@ int main(int argc, char **argv){
 
     for (p = listp; p; p = p->ai_next){
         sockp = (struct sockaddr_in *)p->ai_addr;
-        Inet_ntop(AF_INET, &sockp->sin_addr), buf, MAXLINE);
+        Inet_ntop(AF_INET, &sockp->sin_addr, buf, MAXLINE);
         printf("%s\n", buf);
     }
 
