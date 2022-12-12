@@ -1,10 +1,8 @@
 //
 // Created by InFinity on 2022/12/10.
 //
+// ex) ./hostinfo twitter.com
 
-/*
-./hostinfo twitter.com
-*/
 #include "csapp.h"
 
 int main(int argc, char **argv){
@@ -35,4 +33,6 @@ int main(int argc, char **argv){
 
     /* clean up */
     Freeaddrinfo(listp);
+
+    exit(0);
 }
