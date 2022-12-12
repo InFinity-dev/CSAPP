@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="385c897d-d5bb-44d4-ae33-83ce46e117f5" name="Ubuntu_20.04">
+        <fileTransfer rootFolder="/home/infinity" accessType="SFTP" host="192.168.0.64" port="22" sshConfigId="034502c5-9cd8-4504-810c-2d8cb5e50d22" sshConfig="infinity@192.168.0.64:22">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
