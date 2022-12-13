@@ -20,8 +20,8 @@ Dave O'Hallaron<br>
     <input type="submit" value="Submit">
 </form>
 <hr>
-<button onclick = "getREQUEST(url)">GET Test</button>
-<button onclick = "headREQUEST(url)">HEAD Test</button>
+<button onclick = "getREQUEST(url_get)">GET Test</button>
+<button onclick = "headREQUEST(url_head)">HEAD Test</button>
 <hr>
 <h1>/cgi-bin/post-adder</h1>
 <h2>The form method="post"</h2>
@@ -34,7 +34,8 @@ Dave O'Hallaron<br>
 </form>
 <hr>
 <script>
-let url = "/cgi-bin/adder?arg1=1&arg2=2";
+let url_get = "/cgi-bin/adder?arg1=1&arg2=2";
+let url_head = "/cgi-bin/head-adder?arg1=1&arg2=2";
 function headREQUEST(url, callback){
     alert("HEAD Method Requested!")
     let http = new XMLHttpRequest();

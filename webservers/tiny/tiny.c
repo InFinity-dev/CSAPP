@@ -77,7 +77,7 @@ void doit(int fd) {
     sscanf(buf, "%s %s %s", method, uri, version);
 
     /*501 에러 체크 : 11.11 HEAD Method 조건 추가, 11.12 POST Method 조건 추가 */
-    if (!(strcasecmp(method, "GET") == 0 || strcasecmp(method, "POST") == 0 || strcasecmp(method,"HEAD"))) {
+    if (!(strcasecmp(method, "GET") == 0 || strcasecmp(method, "POST") == 0 || strcasecmp(method,"HEAD") == 0)) {
         clienterror(fd, method, "501", "Not implemented",
                     "Tiny does not implement this method");
         return;

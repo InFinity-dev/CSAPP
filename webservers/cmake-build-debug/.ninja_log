@@ -1,17 +1,17 @@
 # ninja log v5
-3	372	1670796691650892584	CMakeFiles/webservers.dir/echo.c.o	e275ffc58b2dc9b6
 5	482	1670800094928915296	CMakeFiles/webservers.dir/tiny/cgi-bin/adder.c.o	34fc420aaf895131
+3	372	1670796691650892584	CMakeFiles/webservers.dir/echo.c.o	e275ffc58b2dc9b6
+1	136	1670967582694857406	build.ninja	6d09b37028c32b9b
 1	367	1670936333464664700	CMakeFiles/webservers.dir/tiny/tiny.c.o	16e937949438cb54
-1	136	1670959019476697768	build.ninja	6d09b37028c32b9b
 364	445	1670936333544152603	CMakeFiles/webservers.dir/exercise/global-hex2dd.c.o	ce2f6462c6b9cbea
-3	375	1670796691654239265	CMakeFiles/webservers.dir/adder.c.o	354e3ebeebf8abc9
-3	372	1670796691650881123	CMakeFiles/webservers.dir/echoclient.c.o	5e9f898a8070611b
-1	364	1670936333461717103	CMakeFiles/webservers.dir/cache.c.o	59f20d789775725a
-2	372	1670796691651105469	CMakeFiles/webservers.dir/hostinfo.c.o	e429bbae1d7af506
 4	482	1670800094929005606	CMakeFiles/webservers.dir/dd2hex.c.o	7aea2fb407995e98
+3	372	1670796691650881123	CMakeFiles/webservers.dir/echoclient.c.o	5e9f898a8070611b
+2	372	1670796691651105469	CMakeFiles/webservers.dir/hostinfo.c.o	e429bbae1d7af506
+3	375	1670796691654239265	CMakeFiles/webservers.dir/adder.c.o	354e3ebeebf8abc9
+1	364	1670936333461717103	CMakeFiles/webservers.dir/cache.c.o	59f20d789775725a
 4	434	1670796691714158662	CMakeFiles/webservers.dir/tiny/csapp.c.o	74a3caf5322d8dc
-3	482	1670800094928523517	CMakeFiles/webservers.dir/global-hex2dd.c.o	a678c34c66a4da7e
-2	365	1670936333461137094	CMakeFiles/webservers.dir/echo/echoclient.c.o	4291b864f82b6903
 2	365	1670936333461129875	CMakeFiles/webservers.dir/exercise/hostinfo.c.o	6198996afc647ad5
+2	365	1670936333461137094	CMakeFiles/webservers.dir/echo/echoclient.c.o	4291b864f82b6903
+3	482	1670800094928523517	CMakeFiles/webservers.dir/global-hex2dd.c.o	a678c34c66a4da7e
 2	364	1670936333461108491	CMakeFiles/webservers.dir/echo/echoserveri.c.o	ccef6054bd56de8e
 2	392	1670936333490722710	CMakeFiles/webservers.dir/csapp.c.o	431c56a64860fd56
