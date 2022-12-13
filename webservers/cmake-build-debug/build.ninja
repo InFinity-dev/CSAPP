@@ -100,6 +100,12 @@ build CMakeFiles/webservers.dir/exercise/global-hex2dd.c.o: C_COMPILER__webserve
   OBJECT_DIR = CMakeFiles/webservers.dir
   OBJECT_FILE_DIR = CMakeFiles/webservers.dir/exercise
 
+build CMakeFiles/webservers.dir/tiny/cgi-bin/post-adder.c.o: C_COMPILER__webservers_Debug /Users/infinity/CLionProjects/CSAPP/webservers/tiny/cgi-bin/post-adder.c || cmake_object_order_depends_target_webservers
+  DEP_FILE = CMakeFiles/webservers.dir/tiny/cgi-bin/post-adder.c.o.d
+  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -mmacosx-version-min=10.15 -fcolor-diagnostics -std=gnu99
+  OBJECT_DIR = CMakeFiles/webservers.dir
+  OBJECT_FILE_DIR = CMakeFiles/webservers.dir/tiny/cgi-bin
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target webservers
@@ -108,7 +114,7 @@ build CMakeFiles/webservers.dir/exercise/global-hex2dd.c.o: C_COMPILER__webserve
 #############################################
 # Link the executable webservers
 
-build webservers: C_EXECUTABLE_LINKER__webservers_Debug CMakeFiles/webservers.dir/tiny/csapp.c.o CMakeFiles/webservers.dir/tiny/tiny.c.o CMakeFiles/webservers.dir/tiny/cgi-bin/adder.c.o CMakeFiles/webservers.dir/cache.c.o CMakeFiles/webservers.dir/csapp.c.o CMakeFiles/webservers.dir/echo/echoserveri.c.o CMakeFiles/webservers.dir/exercise/hostinfo.c.o CMakeFiles/webservers.dir/echo/echoclient.c.o CMakeFiles/webservers.dir/exercise/global-hex2dd.c.o
+build webservers: C_EXECUTABLE_LINKER__webservers_Debug CMakeFiles/webservers.dir/tiny/csapp.c.o CMakeFiles/webservers.dir/tiny/tiny.c.o CMakeFiles/webservers.dir/tiny/cgi-bin/adder.c.o CMakeFiles/webservers.dir/cache.c.o CMakeFiles/webservers.dir/csapp.c.o CMakeFiles/webservers.dir/echo/echoserveri.c.o CMakeFiles/webservers.dir/exercise/hostinfo.c.o CMakeFiles/webservers.dir/echo/echoclient.c.o CMakeFiles/webservers.dir/exercise/global-hex2dd.c.o CMakeFiles/webservers.dir/tiny/cgi-bin/post-adder.c.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -mmacosx-version-min=10.15
   OBJECT_DIR = CMakeFiles/webservers.dir
   POST_BUILD = :

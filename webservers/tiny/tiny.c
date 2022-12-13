@@ -9,15 +9,25 @@
 #include "csapp.h"
 
 void doit(int fd);
-void read_requesthdrs(rio_t *rp);
+
+// 11.12 POST Method 처리 위해 void 리턴함수에서 int 리턴 함수로 수정, char *method 매개변수 추가
+int read_requesthdrs(rio_t *rp, char *method);
+
 int parse_uri(char *uri, char *filename, char *cgiargs);
-void serve_static(int fd, char *filename, int filesize);
+
+// 11.11 HEAD Method 처리 위해 char *method 매개변수 추가
+void serve_static(int fd, char *filename, int filesize, char *method);
+
 void get_filetype(char *filename, char *filetype);
-void serve_dynamic(int fd, char *filename, char *cgiargs);
+
+// 11.11 HEAD Method 처리 위해 char *method 매개변수 추가
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *method);
+
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg);
 //11.5 A. tiny를 수정해서 모든 요청 라인과 요청 헤더를 echo 하도록 하라.
 void echo(int connfd);
 
+//*************************************TINY MAIN STARTS HERE*************************************//
 int main(int argc, char **argv) {
     int listenfd, connfd;
     char hostname[MAXLINE], port[MAXLINE];
@@ -33,26 +43,17 @@ int main(int argc, char **argv) {
     listenfd = Open_listenfd(argv[1]);
     while (1) {
         clientlen = sizeof(clientaddr);
-        connfd = Accept(listenfd, (SA *) &clientaddr,
-                        &clientlen);  // line:netp:tiny:accept
+        connfd = Accept(listenfd, (SA *) &clientaddr,&clientlen);  // line:netp:tiny:accept
         Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE,
                     0);
         printf("Accepted connection from (%s, %s)\n", hostname, port);
 
-        /*//11.6 A. Tiny를 수정해서 모든 요청라인과 요청 헤더를 echo 하도록 하라.
-        echo(connfd);
-        Close(connfd);
-        connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
-        Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE, 0);
-        doit(connfd);
-        Close(connfd);
-        connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
-        Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE, 0);*/
-
+//        echo(connfd);
         doit(connfd);   // line:netp:tiny:doit
         Close(connfd);  // line:netp:tiny:close
     }
 }
+//*************************************TINY MAIN ENDS HERE*************************************//
 
 /*한개의 HTTP 트랜젝션을 처리한다. rio_readlineb 함수를 사용 해서 요청라인을 읽고 분석한뒤
  * GET 메소드가 아닌경우 501 에러
@@ -75,19 +76,24 @@ void doit(int fd) {
     printf("%s", buf);
     sscanf(buf, "%s %s %s", method, uri, version);
 
-    /*501 에러 체크 : GET 메소드가 아닌 경우*/
-    if (strcasecmp(method, "GET")) {
-        clienterror(fd, method, "501", "Not implemented", "Tiny does not implement this method");
+    /*501 에러 체크 : 11.11 HEAD Method 조건 추가, 11.12 POST Method 조건 추가 */
+    if (!(strcasecmp(method, "GET") == 0 || strcasecmp(method, "POST") == 0 || strcasecmp(method,"HEAD"))) {
+        clienterror(fd, method, "501", "Not implemented",
+                    "Tiny does not implement this method");
         return;
     }
-    read_requesthdrs(&rio);
+    /*// 11.12 POST Method 추가
+    read_requesthdrs(&rio); //POST 메소드 무시*/
+    int param_len = read_requesthdrs(&rio, method);
+    Rio_readnb(&rio, buf, param_len);
 
     /*Parse URI from GET request*/
     is_static = parse_uri(uri, filename, cgiargs);
 
     /*404 에러 체크*/
     if (stat(filename, &sbuf) < 0) {
-        clienterror(fd, filename, "404", "Not Found", "Tiny couldn't find this file");
+        clienterror(fd, filename, "404", "Not Found",
+                    "Tiny couldn't find this file");
         return;
     }
 
@@ -95,19 +101,29 @@ void doit(int fd) {
     if (is_static) {
         /*403 에러 체크 : 권한 없을 경우*/
         if (!(S_ISREG(sbuf.st_mode)) || !(S_IRUSR & sbuf.st_mode)) {
-            clienterror(fd, filename, "403", "Frobidden", "Tiny couldn't read the file");
+            clienterror(fd, filename, "403", "Frobidden",
+                        "Tiny couldn't read the file");
             return;
         }
-        serve_static(fd, filename, sbuf.st_size);
+        //11.11 method 매개변수 추가
+        serve_static(fd, filename, sbuf.st_size, method);
     }
-        /*동적 컨텐츠 요청 : 파일에 대한 읽기 권한 체크*/
+    /*동적 컨텐츠 요청 : 파일에 대한 읽기 권한 체크*/
     else {
         /*403 에러 체크 : 권한 없을 경우*/
         if (!(S_ISREG(sbuf.st_mode)) || !(S_IXUSR & sbuf.st_mode)) {
-            clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run the CGI Program");
+            clienterror(fd, filename, "403", "Forbidden",
+                        "Tiny couldn't run the CGI Program");
             return;
         }
-        serve_dynamic(fd, filename, cgiargs);
+        // 11.12 POST Method 추가로 분기문으로 수정
+        /*// 11.11 method 매개변수 추가
+        serve_dynamic(fd, filename, cgiargs, method);*/
+        if (strcasecmp(method, "POST") == 0){
+            serve_dynamic(fd, filename, buf, method);
+        } else {
+            serve_dynamic(fd, filename, cgiargs, method);
+        }
     }
 }
 
@@ -133,16 +149,30 @@ void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longms
     Rio_writen(fd, body, strlen(body));
 }
 
-/*요청 헤더를 읽는 함수.*/
-void read_requesthdrs(rio_t *rp) {
+/*요청 헤더를 읽는 함수.
+* 11.12 POST Method 처리 위해 void 리턴함수에서 int 리턴 함수로 수정, char *method 매개변수 추가 */
+int read_requesthdrs(rio_t *rp, char *method) {
     char buf[MAXLINE];
 
-    Rio_readlineb(rp, buf, MAXLINE);
+    //11.12
+    /*Rio_readlineb(rp, buf, MAXLINE);
     while (strcmp(buf, "\r\n")) {
         Rio_readlineb(rp, buf, MAXLINE);
         printf("%s", buf);
     }
-    return;
+    return;*/
+
+    int content_len = 0;
+
+    do {
+        Rio_readlineb(rp, buf, MAXLINE);
+        printf("%s", buf);
+        if (strcasecmp(method, "POST") == 0 && strncasecmp(buf, "Content-Length:", 15) == 0) {
+            sscanf(buf, "Content-Length: %d", &content_len);
+        }
+    } while(strcmp(buf, "\r\n"));
+
+    return content_len;
 }
 
 /*URI 파싱 함수
@@ -153,7 +183,7 @@ void read_requesthdrs(rio_t *rp) {
  * URI파일 이름과 옵션으로 CGI 인자 스트링을 파싱하여
  *
  * 정적 컨텐츠 일때 : CGI 스트링을 지우고 URI를 ./index.html 같은 상태 리눅스 경로 이름으로 변환
- * 만약 URI rk '/' 로 끝난다면 기본파일 이름("home.html")을 추가
+ * 만약 URI 가 '/' 로 끝난다면 기본파일 이름("home.html")을 추가
  *
  * 동적 컨텐츠 일때 : 모든 CGI인자를 추출하고, 나머지 URI 부분을 상태 리눅스 파일 이름으로 변환
  * */
@@ -170,7 +200,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs) {
         }
         return 1;
     }
-        /*동적 컨텐츠*/
+    /*동적 컨텐츠*/
     else {
         ptr = index(uri, '?');
         if (ptr) {
@@ -196,7 +226,7 @@ void get_filetype(char *filename, char *filetype) {
     } else if (strstr(filename, ".jpg")) {
         strcpy(filetype, "image/jpg");
     } else if (strstr(filename, ".mp4")) { //11.7 Tiny를 확장해서 MPG비디오 파일을 처리하도록 하시오.
-        strcpy(filetype,"video/mp4");
+        strcpy(filetype, "video/mp4");
     } else {
         strcpy(filetype, "text/plain");
     }
@@ -210,8 +240,10 @@ void get_filetype(char *filename, char *filetype) {
  * 클라이언트에 응답 줄과 응답 헤더를 보냄.
  *
  * 요청한 파일의 내용을 연결 식별자 fd로 복사하여 응답 body를 보냄.
+ *
+ * 11.11 HEAD Method 처리 위해 char *method 매개변수 추가
  * */
-void serve_static(int fd, char *filename, int filesize) {
+void serve_static(int fd, char *filename, int filesize, char *method) {
     int srcfd;
     char *srcp, filetype[MAXLINE], buf[MAXBUF];
 
@@ -226,14 +258,30 @@ void serve_static(int fd, char *filename, int filesize) {
     printf("Response headers:\n");
     printf("%s", buf);
 
+    // 11.11 HEAD 메소드 추가
+    if (!strcasecmp(method, "HEAD")) {
+        return;
+    }
+
     /*클라이언트에게 응답 body 보냄*/
     srcfd = Open(filename, O_RDONLY, 0); // 파일 이름 읽어옴
+
+/*    // 1. MMAP Method : CSAPP 원본 코드
     srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
     // 읽어온 파일을 mmap 함수를 통해 가상메모리 영역으로 매핑
     // mmap 호출시 파일 srcfd의 첫번째 filesize 바이트를 주소 srcp에서 시작하는 사적 읽기-허용 가상메모리 영역으로 매핑
     Close(srcfd); // 파일을 가상메모리 영역으로 매핑 이후에는 파일을 닫아도 된다.
     Rio_writen(fd, srcp, filesize);
-    Munmap(srcp, filesize); // 매핑된 가상메모리 주소 반환
+    Munmap(srcp, filesize); // 매핑된 가상메모리 주소 반환*/
+
+    // 2. Malloc Method : Exercise 11.9 Tiny를 수정해서 정적 컨텐츠를 처리할 때 요청한 파일을 mmap 과 rio_readn 대신에
+    //                    malloc, rio_readn, rio_written을 사용해서 연결 식별자에게 복사하도록 하시오.
+    srcp = (char*)Malloc(filesize);// filesize 크기 만큼의 가상메모리 할당
+    Rio_readn(srcfd, srcp, filesize); // 읽을 파일(srcfd), 할당된 가상 메모리 공간 주소(srcp), 공간 사이즈(filesize)
+    Close(srcfd);
+    Rio_writen(fd, srcp, filesize);
+    free(srcp); //할당된 가상 메모리 해제
+
 }
 
 /*동적컨텐츠 제공 함수
@@ -244,8 +292,10 @@ void serve_static(int fd, char *filename, int filesize) {
  * 자식은 자식의 표준 출력을 연결 파일 식별자로 재지정하고 (Dup2)
  * 그후에 CGI 프로그램을 로드하고 실행. (Execve)
  * 부모는 자식이 종료되어 정리되는 것을 기다리기 위해 wait 함수에서 블록.
+ *
+ * 11.11 HEAD Method 처리 위해 char *method 매개변수 추가
  * */
-void serve_dynamic(int fd, char *filename, char *cgiargs) {
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *method) {
     char buf[MAXLINE], *emptylist[] = {NULL};
 
     /*Return first part of HTTP response*/
@@ -259,6 +309,7 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
     // 자식 프로세스에서는 0이 반환된다. 만약 fork() 함수 실행이 실패하면 -1을 반환한다.
     if (Fork() == 0) {
         setenv("QUERY_STRING", cgiargs, 1);
+        setenv("REQUEST_METHOD", method, 1); // 11.11 HEAD 메소드 추가
         Dup2(fd, STDOUT_FILENO);
         /*
          * 어떤 CGI 프로그램이 동적 컨텐츠를 클라이언트에 보낼 필요가 있다고 가정하자.
@@ -268,19 +319,23 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
          *  클라이언트와 연관된 연결식별자로 재지정한다.
          *  따라서 CGI 프로그램이 표준 출력으로 쓰는 모든 것은 클라이언트로 직접 전송된다.
          * */
-        Execve(filename, emptylist, environ); //CGI 프로그램 실행
+        Execve(filename, emptylist, environ); // CGI 프로그램 실행
     }
-    wait(NULL);
+    Wait(NULL);
 }
 
-void echo(int connfd){
+/* 11.6 echo implement */
+void echo(int connfd) {
     size_t n;
     char buf[MAXLINE];
     rio_t rio;
+
     Rio_readinitb(&rio, connfd);
-    while((n = Rio_readlineb(&rio, buf, MAXLINE)) != 0)
-    {
-        printf("server received %d bytes\n", (int)n);
+    while ((n = Rio_readlineb(&rio, buf, MAXLINE)) != 0) {
+        if (strcmp(buf, "\r\n") == 0) {
+            break;
+        }
+        printf("server received %d bytes\n", (int) n);
         Rio_writen(connfd, buf, n);
     }
 }

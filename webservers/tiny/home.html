@@ -1,24 +1,62 @@
 <html>
 <head><title>test</title></head>
-<body> 
+<body>
+<h1>This is tiny.c Webserver Exhibit</h1>
+<hr>
 <img align="middle" src="godzilla.gif">
+Dave O'Hallaron<br>
 <hr>
-<br>Dave O'Hallaron<br>
-This is tiny.c Webserver Exhibit<br>
-<hr>
-<br>
-<video controls width="480">
-    <source src="bongo_cat.mp4"
-            type="video/mp4">
+<video width="360" controls autoplay loop muted playsinline>
+    <source src="bongo_cat.mp4" type="video/mp4">
 </video>
 <hr>
-<h1>The form method="get" attribute</h1>
+<h1>/cgi-bin/adder</h1>
+<h2>The form method="get"</h2>
 <form action="/cgi-bin/adder" method="get" target="_blank">
     <label>Adder argument 1:</label>
-    <input type="text" id="arg1" name="arg1"><br><br>
-    <label>Adder argument 1:</label>
-    <input type="text" id="arg2" name="arg2"><br><br>
+    <input type="text" name="arg1"><br><br>
+    <label>Adder argument 2:</label>
+    <input type="text" name="arg2"><br><br>
     <input type="submit" value="Submit">
 </form>
+<hr>
+<button onclick = "getREQUEST(url)">GET Test</button>
+<button onclick = "headREQUEST(url)">HEAD Test</button>
+<hr>
+<h1>/cgi-bin/post-adder</h1>
+<h2>The form method="post"</h2>
+<form action="/cgi-bin/post-adder" method="post" target="_blank">
+    <label>Adder argument 1:</label>
+    <input type="text" name="arg1"><br><br>
+    <label>Adder argument 2:</label>
+    <input type="text" name="arg2"><br><br>
+    <input type="submit" value="Submit">
+</form>
+<hr>
+<script>
+let url = "/cgi-bin/adder?arg1=1&arg2=2";
+function headREQUEST(url, callback){
+    alert("HEAD Method Requested!")
+    let http = new XMLHttpRequest();
+    http.open('HEAD', url);
+    http.onreadystatechange = function() {
+        if (this.readyState == this.DONE) {
+            callback(this.status != 404);
+        }
+    };
+    http.send();
+}
+function getREQUEST(url, callback){
+    alert("GET Method Requested!")
+    let http = new XMLHttpRequest();
+    http.open('GET', url);
+    http.onreadystatechange = function() {
+        if (this.readyState == this.DONE) {
+            callback(this.status != 404);
+        }
+    };
+    http.send();
+}
+</script>
 </body>
 </html>
