@@ -2,6 +2,7 @@
 // Created by InFinity on 2022/12/10.
 //
 // ex) ./hostinfo twitter.com
+// 도메인의 실제 IP주소를 알려주는 프로그램
 
 #include "csapp.h"
 

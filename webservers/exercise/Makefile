@@ -3,7 +3,7 @@ CFLAGS = -O2 -Wall -I .
 
 LIB = -lpthread
 
-all: hostinfo csapp
+all: hostinfo
 
 hostinfo: hostinfo.c csapp.o
 	$(CC) $(CFLAGS) -o hostinfo hostinfo.c csapp.o $(LIB)
