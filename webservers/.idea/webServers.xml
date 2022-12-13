@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="385c897d-d5bb-44d4-ae33-83ce46e117f5" name="Ubuntu_20.04">
-        <fileTransfer rootFolder="/home/infinity" accessType="SFTP" host="192.168.219.102" port="22" sshConfigId="00d17c55-c9a2-4771-ad31-bae149dda2e7" sshConfig="infinity@192.168.219.102:22">
+        <fileTransfer rootFolder="/home/infinity" accessType="SFTP" host="10.37.129.3" port="22" sshConfigId="fb9ca720-187b-494b-99e4-3fbe9133d15e" sshConfig="infinity@10.37.129.3:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

@@ -15,6 +15,8 @@ void serve_static(int fd, char *filename, int filesize);
 void get_filetype(char *filename, char *filetype);
 void serve_dynamic(int fd, char *filename, char *cgiargs);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg);
+//11.5 A. tiny를 수정해서 모든 요청 라인과 요청 헤더를 echo 하도록 하라.
+void echo(int connfd);
 
 int main(int argc, char **argv) {
     int listenfd, connfd;
@@ -36,6 +38,17 @@ int main(int argc, char **argv) {
         Getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE,
                     0);
         printf("Accepted connection from (%s, %s)\n", hostname, port);
+
+        /*//11.6 A. Tiny를 수정해서 모든 요청라인과 요청 헤더를 echo 하도록 하라.
+        echo(connfd);
+        Close(connfd);
+        connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
+        Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE, 0);
+        doit(connfd);
+        Close(connfd);
+        connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
+        Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE, port, MAXLINE, 0);*/
+
         doit(connfd);   // line:netp:tiny:doit
         Close(connfd);  // line:netp:tiny:close
     }
@@ -106,7 +119,7 @@ void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longms
     char buf[MAXLINE], body[MAXBUF];
 
     sprintf(body, "<html><title>Tiny Error</title>");
-    sprintf(body, "%s<body bgcolor = ""ffffff"">\r\n", body);
+    sprintf(body, "%s<body bgcolor=""ffffff"">\r\n", body);
     sprintf(body, "%s%s: %s\r\n", body, errnum, shortmsg);
     sprintf(body, "%s<p>%s: %s\r\n", body, longmsg, cause);
     sprintf(body, "%s<hr><em>The Tiny Web Server</em>\r\n", body);
@@ -182,6 +195,8 @@ void get_filetype(char *filename, char *filetype) {
         strcpy(filetype, "image/png");
     } else if (strstr(filename, ".jpg")) {
         strcpy(filetype, "image/jpg");
+    } else if (strstr(filename, ".mp4")) { //11.7 Tiny를 확장해서 MPG비디오 파일을 처리하도록 하시오.
+        strcpy(filetype,"video/mp4");
     } else {
         strcpy(filetype, "text/plain");
     }
@@ -256,4 +271,16 @@ void serve_dynamic(int fd, char *filename, char *cgiargs) {
         Execve(filename, emptylist, environ); //CGI 프로그램 실행
     }
     wait(NULL);
+}
+
+void echo(int connfd){
+    size_t n;
+    char buf[MAXLINE];
+    rio_t rio;
+    Rio_readinitb(&rio, connfd);
+    while((n = Rio_readlineb(&rio, buf, MAXLINE)) != 0)
+    {
+        printf("server received %d bytes\n", (int)n);
+        Rio_writen(connfd, buf, n);
+    }
 }

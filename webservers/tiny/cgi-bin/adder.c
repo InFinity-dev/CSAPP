@@ -12,10 +12,14 @@ int main (void){
     if ((buf = getenv("QUERY_STRING")) !=NULL){
         p = strchr(buf,'&');
         *p = '\0';
-        strcpy(arg1, buf);
-        strcpy(arg2, p+1);
-        n1 = atoi(arg1); //atoi 함수 : 문자열로 받아온 정수를 int형으로 변환(문자의 경우 0 리턴)
-        n2 = atoi(arg2);
+//http://127.0.0.1:8000/cgi-bin/adder?1&2
+//        strcpy(arg1, buf);
+//        strcpy(arg2, p+1);
+//        n1 = atoi(arg1); //atoi 함수 : 문자열로 받아온 정수를 int형으로 변환(문자의 경우 0 리턴)
+//        n2 = atoi(arg2);
+        sscanf(buf, "arg1=%d", &n1);
+        sscanf(p+1, "arg2=%d", &n2);
+
     }
 
     sprintf(content, "QUERY_STRING=%s", buf);
